@@ -38,7 +38,16 @@ function doParse<T>(prefix: string, slice: Slice, n: number, res: Map<string, T>
     }
 
     if (n - prefixLength === 0) {
-        res.set(new BN(pp, 2).toString(10), extractor(slice));
+        let label: string
+        if (pp[0] == '1' /* is negative */) {
+            let base = new BN(pp.slice(1), 2)
+            const b = new BN(2);
+            const nb = b.pow(new BN(prefixLength));
+            label = base.sub(nb).toString(10);
+        } else {
+            label = new BN(pp.slice(1), 2).toString(10);
+        }
+        res.set(label, extractor(slice));
     } else {
         let left = slice.readRef();
         let right = slice.readRef();
